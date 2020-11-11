@@ -1,0 +1,22 @@
+from openpyxl import load_workbook
+
+OpenExcle = load_workbook(r'C:\Users\MoMingZhong\Desktop\test.xlsx')
+print(OpenExcle.sheetnames)  # 打印所有sheet名
+CurSheet = OpenExcle.worksheets[0]
+print(CurSheet)  # 打印当前sheet
+print(CurSheet['A2'].value)
+i = 0
+nums = []
+DatasIn = []
+
+for datas in CurSheet.rows:  # 以行循环当前sheet所有数据
+    i = i + 1
+    data = datas[1].value  # 选取第二列(B列)的数据
+    if data not in DatasIn:
+        DatasIn.append(data)
+    else:
+        nums.insert(0, i)
+for number in nums:
+    CurSheet.delete_rows(number)
+
+OpenExcle.save(r'C:\Users\MoMingZhong\Desktop\New_test.xlsx')
