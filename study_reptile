@@ -1,0 +1,57 @@
+import requests
+from bs4 import BeautifulSoup
+
+# 1.获取相应内容
+r = requests.get('http://www.santostang.com')
+print('响应状态码：', r.status_code)
+print('文本编码：', r.encoding)
+print('字符串方式的响应体：', r.text)
+
+# 2.定制requests
+# 2.1 传递URL参数
+key_dict={'key1':'value1',
+          'key2':'value2'}
+r=requests.get('http://www.santostang.com',params=key_dict)
+print('URL已经正确编码：',r.url)
+print('字符串方式响应体：\n',r.text)
+
+# 2.2 定制请求头
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36',
+    'Host': 'www.santostang.com'
+}
+r = requests.get('http://www.santostang.com/', headers=headers)
+print("响应状态码:", r.status_code)
+
+# 2.3 发送post请求
+import requests
+
+key_dict = {'key1': 'value1', 'key2': 'value2'}
+r = requests.post('http://httpbin.org/post', data=key_dict)
+print(r.text)
+
+# 2.4 服务器相应超时,timeout一般设置为20s
+link='http://www.santostang.com/'
+r=requests.get(link,timeout=0.001)
+
+# 3. requests爬虫实践
+# 3.1 项目实践
+def get_movies():
+    headers = {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0;) Gecko/20100101 Firefox/65.0',
+        'Host': 'movie.douban.com'
+    }
+    movie_list = []
+    for i in range(0,10):
+        link='https://movie.douban.com/top250?start='+str(i*25)+'&filter='
+        r=requests.get(link,headers=headers,timeout=10)
+        print(str(i+1),'页响应状态码',r.status_code)
+
+        soup=BeautifulSoup(r.text,'lxml')
+        div_list = soup.find_all('div', class_='hd')
+        for each in div_list:
+            movie=each.a.span.text.strip()
+            movie_list.append(movie)
+    return movie_list
+movies=get_movies()
+print(movies)
